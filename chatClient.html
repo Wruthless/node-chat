@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>>
+        <title>Chat Test</title>
+    </head>
+    <!-- The chat UI is just a single text input field -->
+    <!-- New chat messages will be inserted before this input field -->
+    <input id="input" style="width:100%; padding:10px; border: solid black 2px"/>
+<body>
+<script>
+
+    let nick = prompt("Enter your nickname");
+    let input = document.getElementById("input")
+    input.focus()
+
+    let chat = new EventSource("/chat");
+
+    // when a chat message arrives
+    chat.addEventListener("chat", event => {
+        let div = document.createElement("div");
+        div.append(event.data);
+        input.before(div);
+        input.scrollTo(div);
+        //input.strollIntoView();
+    });
+
+    // post users message to server
+    input.addEventListener("change", ()=> {
+        fetch("/chat", {
+            method: "POST",
+            body: nick + ": " + input.value
+        })
+        .catch(e => console.error);
+        input.value=""
+    });
+
+</script>
+</body>
+    
+</html>
